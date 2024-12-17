@@ -40,30 +40,43 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black87,
-      appBar:  AppBar(
-        leading:   IconButton( icon: Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ), onPressed: () {
-          Navigator.of(context).push( MaterialPageRoute(builder: (cpntext)=> HomeScreen()));
-        },),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          },
+        ),
         backgroundColor: Colors.black45,
         centerTitle: true,
-        title: const Text("Ajouter une de l'argent",  style: TextStyle(color: Colors.white),),
+        title: const Text(
+          "Ajouter une de l'argent",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
               // Category Field
               TextFormField(
                 controller: _categoryController,
                 readOnly: true, // Make it read-only
+                style: TextStyle(color: Colors.white), // Text color
                 decoration: InputDecoration(
                   labelText: 'Catégorie',
-                  border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.white),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueAccent),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -75,15 +88,22 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                 },
               ),
               SizedBox(height: screenHeight * 0.03),
-    
+
               // Amount Field
               TextFormField(
                 controller: _amountController,
                 focusNode: _amountFocusNode,
                 keyboardType: TextInputType.number,
+                style: TextStyle(color: Colors.white), // Text color
                 decoration: InputDecoration(
                   labelText: 'Montant d\'argent',
-                  border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.white),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueAccent),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -97,50 +117,49 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: screenHeight * 0.03),
-    
+              SizedBox(height: screenHeight * 0.05),
+
               // Save Button
-            ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                         Income income= Income(category: widget.selectedCategory, amount: double.parse(_amountController.text), date: DateTime.now());
-                        ObjectBoxIncomes.saveIncome(income);
-                        var snack = const SnackBar(
-                          content: Text(
-                            "Enregistrée avec succès",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                          backgroundColor: Colors.green,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snack);
-    
-                        // Clear input fields after successful submission
-                        _categoryController.clear();
-                        _amountController.clear();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 5, // Adds shadow for a floating effect
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(30), // Rounded corners
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    Income income = Income(
+                      category: widget.selectedCategory,
+                      amount: double.parse(_amountController.text),
+                      date: DateTime.now(),
+                    );
+                    ObjectBoxIncomes.saveIncome(income);
+                    var snack = const SnackBar(
+                      content: Text(
+                        "Enregistrée avec succès",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                      padding: EdgeInsets.symmetric(
-                        vertical: 16, // Adjust the button height
-                        horizontal: 32, // Adjust the button width
-                      ),
-                      backgroundColor: Colors.grey[
-                          100], // Background color is set to transparent for gradient
-                      shadowColor:
-                          Colors.black.withOpacity(0.2), // Subtle shadow
-                    ),
-                    child: Text(
-                      'Enregistrer',
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
+                      backgroundColor: Colors.green,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snack);
+
+                    // Clear input fields after successful submission
+                    _categoryController.clear();
+                    _amountController.clear();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
                   ),
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                  backgroundColor: Colors.blueAccent, // Background color
+                ),
+                child: Text(
+                  'Enregistrer',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white, // Text color
+                  ),
+                ),
+              ),
             ],
           ),
         ),
