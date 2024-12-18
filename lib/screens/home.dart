@@ -21,57 +21,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool isDarkMode=false;
   int touchedIndex = -1;
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   final TextEditingController categoryNameController = TextEditingController();
   final TextEditingController expenseCategoryNameController =
       TextEditingController();
+  final TextEditingController budgetController = TextEditingController();
   final categoryformKey = GlobalKey<FormState>();
 
   int currentIndex = 0;
   double budget = 35000;
-  List<String> expenseCategories = ["repas", "essence", "dons", "loisirs"];
-  List<Expense> expenseList = [
-    Expense(
-        title: "garba", category: "repas", amount: 500, date: DateTime.now()),
-    Expense(
-        title: "moto",
-        category: "essence",
-        amount: 2500,
-        date: DateTime.parse("2012-02-27")),
-    Expense(
-        title: "garibou",
-        category: "dons",
-        amount: 2500,
-        date: DateTime.parse("2012-02-27")),
-    Expense(
-        title: "faso park",
-        category: "loisirs",
-        amount: 5000,
-        date: DateTime.parse("2012-02-12")),
-    Expense(
-        title: "garba",
-        category: "repas",
-        amount: 500,
-        date: DateTime.parse("2012-02-27")),
-    Expense(
-        title: "moto", category: "essence", amount: 2500, date: DateTime.now()),
-    Expense(
-        title: "garibou", category: "dons", amount: 2500, date: DateTime.now()),
-    Expense(
-        title: "faso park",
-        category: "loisirs",
-        amount: 5000,
-        date: DateTime.parse("2012-02-12")),
+  List<String> expenseCategories = ["Repas", "Transport", "Divertissement", "Santé","Vêtements","Dons"];
+  
+  List<String> incomeCategories = ["Salaire", "Business", "Cadeaux"];
+ List<Expense> expenseList = [
+     
   ];
-  List<String> incomeCategories = ["Job", "Business", "Presents"];
-
   List<Income> incomes = [
-    Income(category: "Job", amount: 5000, date: DateTime.now()),
-    Income(
-        category: "Business", amount: 5000, date: DateTime.parse("2012-02-27")),
-    Income(category: "Presents", amount: 5000, date: DateTime.now()),
-    Income(category: "Job", amount: 5000, date: DateTime.now()),
+     
   ];
   void getIncomes() {
     incomes = ObjectBoxIncomes.getAllIncomes();
@@ -176,19 +144,25 @@ class _HomeScreenState extends State<HomeScreen> {
       initialIndex: 0,
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: isDarkMode? Colors.black45 : Colors.white,
         appBar: AppBar(
-          leading: const Icon(
+          leading:   Icon(
             Icons.menu,
-            color: Colors.white,
+            color:isDarkMode?  Colors.white : Colors.black45 ,
           ),
-          actions: const [
-            Icon(
-              Icons.edit,
-              color: Colors.white,
+          actions:   [
+            IconButton(
+              icon: Icon(isDarkMode ? Icons.light_mode  : Icons.dark_mode,
+              color: isDarkMode?  Colors.white : Colors.black45 ,),
+              onPressed: (){
+                isDarkMode = !isDarkMode;
+                setState(() {
+                  
+                });
+              },
             ),
           ],
-          backgroundColor: Colors.black45,
+          backgroundColor: isDarkMode? Colors.black45 : Colors.white,
           centerTitle: true,
           bottom: currentIndex == 3
               ? null
@@ -236,20 +210,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
           title: Column(
             children: [
-              const Text(
+                Text(
                 'Manager',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: isDarkMode? Colors.white : Colors.black87,
                 ),
               ),
               Text(
                 'Solde: ${totalIncomes - totalExpense} FCFA',
-                style: const TextStyle(
+                style:   TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color:  isDarkMode? Colors.white : Colors.black87,
                 ),
               ),
             ],
@@ -445,14 +419,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         );
                       },
-                      onTap: () {
-                        Navigator.of(context).push(
+                      onTap: ()  {
+                     Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => AddExpenseScreen(
+                            builder: (context) => AddExpenseScreen(isDarkMode: isDarkMode,
                               selectedCategory: categorie,
                             ),
                           ),
                         );
+       
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -478,9 +453,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             Text(
-                              "F CFA $amount",
+                              "$amount F CFA ",
                               style: TextStyle(
                                 fontSize: 14,
+                                fontWeight: FontWeight.bold,
                                 color: Colors.white70,
                               ),
                             ),
@@ -680,6 +656,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => AddIncomeScreen(
+                              isDarkMode: isDarkMode,
                               selectedCategory: category,
                             ),
                           ),
@@ -709,7 +686,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             Text(
-                              "F CFA $amount",
+                              " $amount F CFA ",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white70,
@@ -738,7 +715,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                           builder: (context) =>
-                              UpdateExpenseScreen(expense: expense)),
+                              UpdateExpenseScreen(expense: expense, isDarkMode: isDarkMode,)),
                     );
                   },
                   child: Padding(
@@ -763,8 +740,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Text(
                                 expense.category,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 16),
+                                style:   TextStyle(
+                                    color:  isDarkMode? Colors.white : Colors.black87, fontSize: 16),
                               ),
                               Text(
                                 expense.title,
@@ -775,7 +752,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Text(
-                          expense.amount.toString(),
+                          
+                               "${expense.amount.toString()} FCFA",
                           style: TextStyle(
                             color: Colors.red,
                             fontSize: 16,
@@ -813,8 +791,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ObjectBoxExpenses.deleteExpense(
                                             expense.id);
 
+                                        setState(() {
+                                          expenseList.removeWhere(
+                                              (item) => item.id == expense.id);
+                                        });
+
                                         Navigator.pop(context);
-                                        setState(() {});
                                       },
                                       child: const Text(
                                         "oui",
@@ -837,7 +819,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-             //incomes operations
+            //incomes operations
             ListView.builder(
               itemCount: incomes.length,
               itemBuilder: (context, index) {
@@ -847,7 +829,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                           builder: (context) =>
-                              UpdateIncomeScreen(income: income)),
+                              UpdateIncomeScreen(income: income, isDarkMode: isDarkMode,)),
                     );
                   },
                   child: Padding(
@@ -872,14 +854,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Text(
                                 income.category,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 16),
+                                style:   TextStyle(
+                                    color:  isDarkMode? Colors.white : Colors.black87,fontSize: 16),
                               ),
                             ],
                           ),
                         ),
                         Text(
-                          income.amount.toString(),
+                          "${income.amount.toString()} FCFA",
                           style: TextStyle(
                             color: Colors.green,
                             fontSize: 16,
@@ -916,8 +898,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onPressed: () {
                                         ObjectBoxIncomes.deleteIcome(income.id);
 
+                                        setState(() {
+                                          incomes.removeWhere(
+                                              (item) => item.id == income.id);
+                                        });
+
                                         Navigator.pop(context);
-                                        setState(() {});
                                       },
                                       child: const Text(
                                         "oui",
@@ -942,12 +928,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ]),
 
-//operations ends 
+//operations ends
 
 //statistique start here
           TabBarView(children: [
-            
-// expenes statistique 
+// expenes statistique
             ListView(
               children: [
                 Container(
@@ -963,8 +948,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             getTitlesWidget: (value, meta) {
                               return Text(
                                 meta.formattedValue,
-                                style: const TextStyle(
-                                    color: Colors.white,
+                                style:   TextStyle(
+                                    color:  isDarkMode? Colors.white : Colors.black87,
                                     fontWeight: FontWeight.bold),
                               );
                             },
@@ -980,8 +965,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return Text(
                                   totalExpensesByDate.keys
                                       .elementAt(value.toInt()),
-                                  style: const TextStyle(
-                                      color: Colors.white,
+                                  style:   TextStyle(
+                                      color: isDarkMode? Colors.white : Colors.black87,
                                       fontWeight: FontWeight.bold),
                                 );
                               }
@@ -1040,7 +1025,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 titleStyle: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: isDarkMode? Colors.white : Colors.black87,
                                 ),
                               ))
                           .toList(),
@@ -1091,8 +1076,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Text(
                                     category,
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style:   TextStyle(
+                                      color: isDarkMode? Colors.white : Colors.black87,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -1111,9 +1096,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  "F CFA $amount",
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  "$amount F CFA",
+                                  style:   TextStyle(
+                                    color:  isDarkMode? Colors.white : Colors.black87,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -1135,7 +1120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-           // incomes statistique 
+            // incomes statistique
             ListView(
               children: [
                 Container(
@@ -1151,8 +1136,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             getTitlesWidget: (value, meta) {
                               return Text(
                                 meta.formattedValue,
-                                style: const TextStyle(
-                                    color: Colors.white,
+                                style:   TextStyle(
+                                    color:  isDarkMode? Colors.white : Colors.black87,
                                     fontWeight: FontWeight.bold),
                               );
                             },
@@ -1168,8 +1153,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return Text(
                                   totalIncomessByDate.keys
                                       .elementAt(value.toInt()),
-                                  style: const TextStyle(
-                                      color: Colors.white,
+                                  style:   TextStyle(
+                                      color:  isDarkMode? Colors.white : Colors.black87,
                                       fontWeight: FontWeight.bold),
                                 );
                               }
@@ -1212,7 +1197,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 titleStyle: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color:  isDarkMode? Colors.white : Colors.black87,
                                 ),
                               ))
                           .toList(),
@@ -1262,8 +1247,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Text(
                                     category,
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style:   TextStyle(
+                                      color:  isDarkMode? Colors.white : Colors.black87,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -1282,9 +1267,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  "F CFA $amount",
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  "$amount F CFA",
+                                  style:   TextStyle(
+                                    color:  isDarkMode? Colors.white : Colors.black87,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -1317,75 +1302,143 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Monthly Budget Card
-                Card(
-                  color: Colors.grey[900],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Montant',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              ' $totalExpense F CFA  /  $budget F CFA',
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.grey),
-                            ),
-                            Text(
-                              ' ${budget - totalExpense} F CFA ',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: totalExpense / budget > 0.6
-                                    ? Colors.red
-                                    : Colors.green,
-                                fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: (){
+                  budgetController.text=budget.toString();
+                         showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              scrollable: true,
+                              title: const Text("Ajouter un Budget"),
+                              content: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Form(
+                                  key: categoryformKey,
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Veuillez entrer le montant';
+                                      }
+                                      return null;
+                                    },
+                                    controller: budgetController,
+                                    decoration: const InputDecoration(
+                                      labelText: "montant du budget",
+                                      icon: Icon(Icons.category),
+                                    ),
+                                  ),
+                                ),
                               ),
+                              actions: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red),
+                                  child: const Text(
+                                    "annuler",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue),
+                                  onPressed: () {
+                                     
+                                   if (categoryformKey.currentState!.validate()) {
+                    setState(() {
+                      budget = double.parse(budgetController.text);
+                    });
+                  }
+                  budgetController.clear();
+                  Navigator.pop(context);
+                                    
+                                  },
+                                  child: const Text(
+                                    "ajouter",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                   
+                  },
+                  child: Card(
+                    color: isDarkMode? Colors.grey[900] : Colors.grey[300], 
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                           Text(
+                            'Montant',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        LinearProgressIndicator(
-                          value: totalExpense / budget, // Proportion utilisée
-                          backgroundColor: Colors.grey[800],
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              totalExpense / budget > 0.6
-                                  ? Colors.red
-                                  : Colors.green),
-                        ),
-                        const SizedBox(height: 16.0),
-                        const Text(
-                          'budget mensuel',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        const Text(
-                          'Categories: Entire expenses',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
+                          const SizedBox(height: 8.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                ' $totalExpense F CFA  /  $budget F CFA',
+                                style:
+                                    TextStyle(fontSize: 14, color:isDarkMode ? Colors.grey : Colors.black,),
+                              ),
+                              Text(
+                                ' ${budget - totalExpense} F CFA ',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: totalExpense / budget > 0.6
+                                      ? Colors.red
+                                      : Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8.0),
+                          LinearProgressIndicator(
+                            value: totalExpense / budget, // Proportion utilisée
+                            backgroundColor: Colors.grey[800],
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                totalExpense / budget > 0.6
+                                    ? Colors.red
+                                    : Colors.green),
+                          ),
+                          const SizedBox(height: 16.0),
+                            Text(
+                            'budget mensuel',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                            Text(
+                            'Toutes les depenses incluse',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color:isDarkMode ? Colors.grey : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+              
+              
               ],
             ),
           ),

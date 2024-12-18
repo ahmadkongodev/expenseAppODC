@@ -5,8 +5,9 @@ import '../screens/home.dart';
 
 class UpdateIncomeScreen extends StatefulWidget {
   final Income income;
-
-  UpdateIncomeScreen({super.key, required this.income});
+  final bool isDarkMode;
+  
+  UpdateIncomeScreen({super.key, required this.income, required this.isDarkMode});
 
   @override
   State<UpdateIncomeScreen> createState() => _UpdateIncomeScreenState();
@@ -55,8 +56,12 @@ class _UpdateIncomeScreenState extends State<UpdateIncomeScreen> {
           ),
         );
 
-        Navigator.pop(context, true); // Retourner à l'écran précédent
-      } catch (e) {
+
+   Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false, // Remove all previous routes
+          );
+                } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -75,17 +80,17 @@ class _UpdateIncomeScreenState extends State<UpdateIncomeScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: widget.isDarkMode? Colors.black87 : Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon:   Icon(Icons.arrow_back, color: widget.isDarkMode? Colors.white : Colors.black,),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: Colors.black45,
+        backgroundColor: widget.isDarkMode? Colors.black45 : Colors.white,
         centerTitle: true,
-        title: const Text(
+        title:   Text(
           "Modifier un revenu",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: widget.isDarkMode? Colors.white : Colors.black,),
         ),
       ),
       body: Form(
@@ -110,26 +115,25 @@ class _UpdateIncomeScreenState extends State<UpdateIncomeScreen> {
               SizedBox(height: screenHeight * 0.05),
               ElevatedButton(
                 onPressed: _updateIncome,
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  backgroundColor: Colors.blueAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                style:  ElevatedButton.styleFrom(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 32,
+                    ),
+                    backgroundColor: widget.isDarkMode? Colors.grey[100] : Colors.black,
+                    shadowColor:  widget.isDarkMode? Colors.black.withOpacity(0.2) : Colors.white.withOpacity(0.2) ,
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 32,
+                  child:   Text(
+                    'Modifier',
+                    style: TextStyle(
+                      color: widget.isDarkMode? Colors.black : Colors.white,
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-                child: const Text(
-                  'Enregistrer',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -149,23 +153,23 @@ class _UpdateIncomeScreenState extends State<UpdateIncomeScreen> {
       keyboardType: keyboardType,
       focusNode: focusNode,
       readOnly: readOnly,
-      style: const TextStyle(color: Colors.white),
+      style:   TextStyle(color: widget.isDarkMode? Colors.white : Colors.black,),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white70),
+        labelStyle:   TextStyle(color:widget.isDarkMode? Colors.white : Colors.black,),
         filled: true,
-        fillColor: Colors.black,
+        fillColor: widget.isDarkMode? Colors.black : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.white70),
+          borderSide:   BorderSide(color: widget.isDarkMode? Colors.white70 : Colors.black,),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.white54),
+          borderSide:   BorderSide(color: widget.isDarkMode? Colors.white54 : Colors.black,),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.white),
+          borderSide:   BorderSide(color: widget.isDarkMode? Colors.white : Colors.black,),
         ),
       ),
       validator: (value) {

@@ -5,8 +5,9 @@ import '../db/expenses_db_helper.dart';
 
 class UpdateExpenseScreen extends StatefulWidget {
   final Expense expense;
+  final bool isDarkMode;
 
-  UpdateExpenseScreen({super.key, required this.expense});
+  UpdateExpenseScreen({super.key, required this.expense, required this.isDarkMode});
 
   @override
   State<UpdateExpenseScreen> createState() => _UpdateExpenseScreenState();
@@ -51,8 +52,11 @@ class _UpdateExpenseScreenState extends State<UpdateExpenseScreen> {
         ObjectBoxExpenses.updateExpense(updatedExpense);
 
         _showSnackBar("Dépense modifiée avec succès", Colors.green);
-        Navigator.pop(context, true);
-      } catch (e) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false, // Remove all previous routes
+          );
+       } catch (e) {
         _showSnackBar("Erreur lors de la mise à jour", Colors.red);
       }
     }
@@ -82,16 +86,16 @@ class _UpdateExpenseScreenState extends State<UpdateExpenseScreen> {
       readOnly: readOnly,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(color: Colors.white),
+      style:   TextStyle(color: widget.isDarkMode? Colors.white : Colors.black),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white70),
+        labelStyle:   TextStyle(color: widget.isDarkMode? Colors.white70 : Colors.black87),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.white38),
+          borderSide:   BorderSide(color:  widget.isDarkMode? Colors.white38 : Colors.black38),
           borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.white),
+          borderSide:   BorderSide(color:  widget.isDarkMode? Colors.white : Colors.black),
           borderRadius: BorderRadius.circular(10),
         ),
         border: OutlineInputBorder(
@@ -106,17 +110,17 @@ class _UpdateExpenseScreenState extends State<UpdateExpenseScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor:  widget.isDarkMode? Colors.black87 : Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon:   Icon(Icons.arrow_back, color: widget.isDarkMode? Colors.white : Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: Colors.black45,
+        backgroundColor: widget.isDarkMode? Colors.black45 : Colors.white,
         centerTitle: true,
-        title: const Text(
+        title:   Text(
           "Modifier une dépense",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: widget.isDarkMode? Colors.white : Colors.black),
         ),
       ),
       body: GestureDetector(
@@ -162,12 +166,13 @@ class _UpdateExpenseScreenState extends State<UpdateExpenseScreen> {
                       vertical: 16,
                       horizontal: 32,
                     ),
-                    backgroundColor: Colors.grey[100],
-                    shadowColor: Colors.black.withOpacity(0.2),
+                    backgroundColor: widget.isDarkMode? Colors.grey[100] : Colors.black,
+                    shadowColor:  widget.isDarkMode? Colors.black.withOpacity(0.2) : Colors.white.withOpacity(0.2) ,
                   ),
-                  child: const Text(
-                    'Enregistrer',
+                  child:   Text(
+                    'Modifier',
                     style: TextStyle(
+                      color: widget.isDarkMode? Colors.black : Colors.white,
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),

@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 
 class AddIncomeScreen extends StatefulWidget {
-  AddIncomeScreen({super.key, required this.selectedCategory});
+  AddIncomeScreen({super.key, required this.selectedCategory, required this.isDarkMode});
 
   final String selectedCategory;
+  final bool isDarkMode;
+
 
   @override
   State<AddIncomeScreen> createState() => _AddIncomeScreenState();
@@ -44,16 +46,16 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.white,
+            color: widget.isDarkMode? Colors.white : Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
           },
         ),
-        backgroundColor: Colors.black45,
+        backgroundColor:  widget.isDarkMode? Colors.black45 : Colors.white,
         centerTitle: true,
         title: const Text(
-          "Ajouter une de l'argent",
+          "Ajouter d'argent",
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -67,12 +69,12 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
               TextFormField(
                 controller: _categoryController,
                 readOnly: true, // Make it read-only
-                style: TextStyle(color: Colors.white), // Text color
+                style: TextStyle(color:  widget.isDarkMode? Colors.white : Colors.black,), // Text color
                 decoration: InputDecoration(
                   labelText: 'Catégorie',
-                  labelStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(color: widget.isDarkMode? Colors.white : Colors.black,),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: BorderSide(color: widget.isDarkMode? Colors.white : Colors.black,),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -97,9 +99,9 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                 style: TextStyle(color: Colors.white), // Text color
                 decoration: InputDecoration(
                   labelText: 'Montant d\'argent',
-                  labelStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(color:  widget.isDarkMode? Colors.white : Colors.black,),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: BorderSide(color:  widget.isDarkMode? Colors.white : Colors.black,),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -137,7 +139,10 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                       backgroundColor: Colors.green,
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snack);
-
+   Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false, // Remove all previous routes
+          );
                     // Clear input fields after successful submission
                     _categoryController.clear();
                     _amountController.clear();
@@ -156,7 +161,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white, // Text color
+                    color: widget.isDarkMode? Colors.white : Colors.black, // Text color
                   ),
                 ),
               ),

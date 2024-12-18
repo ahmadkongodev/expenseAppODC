@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import '../db/expenses_db_helper.dart';
 
 class AddExpenseScreen extends StatefulWidget {
-  AddExpenseScreen({super.key, required this.selectedCategory});
+  const AddExpenseScreen({super.key, required this.selectedCategory, required this.isDarkMode});
 
-  String selectedCategory;
-
+  final String selectedCategory;
+final bool isDarkMode;
   @override
   State<AddExpenseScreen> createState() => _AddExpenseScreenState();
 }
@@ -41,18 +41,21 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: widget.isDarkMode? Colors.black87 : Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon:   Icon(Icons.arrow_back, color: widget.isDarkMode? Colors.white : Colors.black,),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.of(context).pop();
           },
         ),
-        backgroundColor: Colors.black45,
+        backgroundColor:widget.isDarkMode? Colors.black87 : Colors.white,
         centerTitle: true,
-        title: Text("Ajouter une dépense", style: TextStyle(color: Colors.white)),
-      ),
+        title:   Text(
+          "Ajouter une dépense",
+          style: TextStyle(color: widget.isDarkMode? Colors.white : Colors.black,
+        ),
+      ),),
       body: GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus?.unfocus(); // Close keyboard
@@ -90,7 +93,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
-  // Widget for text fields with consistent design
   Widget _buildTextFormField({
     required TextEditingController controller,
     required String label,
@@ -101,23 +103,23 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       controller: controller,
       keyboardType: keyboardType,
       readOnly: readOnly,
-      style: TextStyle(color: Colors.white), // Text color
+      style:   TextStyle(color:widget.isDarkMode? Colors.white : Colors.black,), // Text color
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.white70), // Label color
+        labelStyle:   TextStyle(color: widget.isDarkMode? Colors.white : Colors.black,), // Label color
         filled: true,
-        fillColor: Colors.black, // Input background
+        fillColor:widget.isDarkMode? Colors.black : Colors.white, // Input background
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.white70),
+          borderSide:   BorderSide(color: widget.isDarkMode?Colors.white70 : Colors.black),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.white54),
+          borderSide:   BorderSide(color: widget.isDarkMode? Colors.white54 : Colors.black),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.white),
+          borderSide:   BorderSide(color:widget.isDarkMode?Colors.white: Colors.black),
         ),
       ),
       validator: (value) {
@@ -127,7 +129,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
-  // Widget for the save button
   Widget _buildSaveButton() {
     return ElevatedButton(
       onPressed: () {
@@ -139,8 +140,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             date: DateTime.now(),
           );
           ObjectBoxExpenses.saveExpense(expense);
+
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text(
                 "Dépense enregistrée avec succès",
                 style: TextStyle(color: Colors.white, fontSize: 16),
@@ -148,21 +150,24 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          nameController.clear();
-          amountController.clear();
+
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false, // Remove all previous routes
+          );
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor:widget.isDarkMode? Colors.white : Colors.black,
+        foregroundColor:widget.isDarkMode? Colors.black : Colors.white,
         elevation: 5,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
         shadowColor: Colors.black.withOpacity(0.3),
       ),
-      child: Text(
+      child: const Text(
         'Enregistrer',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
