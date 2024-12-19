@@ -6,6 +6,8 @@ import 'db/incomes_db_helper.dart';
 import 'screens/home.dart'; 
 import 'dart:async';
 
+import 'screens/onBoarding.dart';
+
 late ObjectBoxIncomes incomesObjectbox;
 late ObjectBoxExpenses expensesObjectbox;
 
@@ -34,7 +36,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
       ),
       
-      home:  const HomeScreen(),
+      home:  const OnboardingScreen(),
     );
   }
 }
