@@ -153,7 +153,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           );
           
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) =>   HomeScreen(currentIndex: 0,initalIndex: 0,)),
             (route) => false, // Remove all previous routes
           );
         }

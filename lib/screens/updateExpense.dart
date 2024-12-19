@@ -53,7 +53,7 @@ class _UpdateExpenseScreenState extends State<UpdateExpenseScreen> {
 
         _showSnackBar("Dépense modifiée avec succès", Colors.green);
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) =>  HomeScreen(currentIndex: 1,initalIndex: 0,)),
             (route) => false, // Remove all previous routes
           );
        } catch (e) {

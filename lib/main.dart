@@ -1,9 +1,11 @@
 import 'package:expense_app/notification.dart';
+import 'package:expense_app/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
  
 import 'db/expenses_db_helper.dart';
 import 'db/incomes_db_helper.dart';
-import 'screens/home.dart'; 
+import 'db/shared_preference.dart';
 import 'dart:async';
 
 import 'screens/onBoarding.dart';
@@ -16,6 +18,8 @@ Future<void> main() async {
 
   incomesObjectbox = await ObjectBoxIncomes.create();
   expensesObjectbox = await ObjectBoxExpenses.create(); 
+
+   await SharedPref.initialise();
    NotificationService.initNotification();
   //   const oneSec = Duration(minutes:1);
   // Timer.periodic(oneSec, (Timer t) =>  NotificationService.showLocalNotification("test", "ajouter vos depenses du jour", "rienn")
@@ -34,9 +38,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
        theme: ThemeData(
           useMaterial3: true,
+          
       ),
       
-      home:  const OnboardingScreen(),
+      home:    SharedPref.checkConnected()==true ?   HomeScreen(currentIndex: 0,initalIndex: 0,) :
+   const OnboardingScreen(),
     );
   }
 }

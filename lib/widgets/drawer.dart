@@ -1,55 +1,79 @@
 import 'package:flutter/material.dart';
 
-class MyHeaderDrawer extends StatefulWidget {
-  @override
-  _MyHeaderDrawerState createState() => _MyHeaderDrawerState();
-}
+class myDrawer extends StatelessWidget {
+  const myDrawer({
+    super.key,
+  });
 
-class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      color: const Color.fromARGB(255, 71, 55, 241),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20.0),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+    return Drawer(
+      
+      child: SingleChildScrollView(
+          child: Container(
+        child: Column(children: [
           Container(
-            margin: EdgeInsets.only(bottom: 10),
-            height: 70,
-            child: const Icon(
-              Icons.person,
-              color: Colors.white,
+            height: 400,
+            width: double.infinity,
+            color: const Color.fromARGB(255, 71, 55, 241),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      height: 100,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: AssetImage('assets/profil.png'),
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      "  Vous devez vous connecté pour pouvoir sauvegarder \n et restaurer les données de l'application.",
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: const BorderSide(color: Colors.white),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "assets/google.png",
+                              width: 24, // Augmenter la taille de l'image
+                              height: 24, // Augmenter la taille de l'image
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              "Se connecter avec google",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        onPressed: () {
+                          // Ajoutez votre logique ici
+                        },
+                      ),
+                    )
+                  ]),
             ),
           ),
-          const Text(
-            "  Vous devez être connecté pour pouvoir sauvegarder \n et restaurer les données de l'application.",
-            style: TextStyle(color: Colors.white, fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(color: Colors.white),
-              ),
-            ),
-            label: const Text(
-              "Se connecter avec google",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-            ),
-            icon: Image.asset("assets/google.png"),
-            onPressed: () {
-              // Ajoutez votre logique ici
-            },
-          )
         ]),
-      ),
+      )),
     );
   }
 }

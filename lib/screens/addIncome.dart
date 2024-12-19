@@ -49,8 +49,8 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
             color: widget.isDarkMode? Colors.white : Colors.black,
           ),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
-          },
+          Navigator.pop(context);
+              },
         ),
         backgroundColor:  widget.isDarkMode? Colors.black45 : Colors.white,
         centerTitle: true,
@@ -140,7 +140,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snack);
    Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) =>  HomeScreen(currentIndex: 0,initalIndex: 1,)),
             (route) => false, // Remove all previous routes
           );
                     // Clear input fields after successful submission

@@ -1,3 +1,4 @@
+import 'package:expense_app/db/shared_preference.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
@@ -29,14 +30,16 @@ class OnboardingScreen extends StatelessWidget {
       ],
       onDone: () {
         // Quand l'utilisateur a terminé l'onboarding
+        SharedPref.setUserConnectedChecker();
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) =>   HomeScreen(currentIndex: 0,initalIndex: 0,)),
         );
       },
       onSkip: () {
         // Quand l'utilisateur saute l'onboarding
+         SharedPref.setUserConnectedChecker();
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) =>   HomeScreen(currentIndex: 0,initalIndex: 0,)),
         );
       },
       showSkipButton: true,

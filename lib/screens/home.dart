@@ -1,5 +1,6 @@
 import 'package:expense_app/db/expenses_db_helper.dart';
 import 'package:expense_app/db/incomes_db_helper.dart';
+import 'package:expense_app/db/shared_preference.dart';
 import 'package:expense_app/models/expense.dart';
 import 'package:expense_app/notification.dart';
 import 'package:expense_app/screens/addExpense.dart';
@@ -12,17 +13,20 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../models/Income.dart';
+import '../widgets/drawer.dart';
 import 'updateExpense.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
+    HomeScreen({super.key, required this.initalIndex,  required this.currentIndex});
+int initalIndex;
+int currentIndex;
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isDarkMode = false;
+
   int touchedIndex = -1;
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   final TextEditingController categoryNameController = TextEditingController();
@@ -31,18 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController budgetController = TextEditingController();
   final categoryformKey = GlobalKey<FormState>();
 
-  int currentIndex = 0;
-  double budget = 0;
-  List<String> expenseCategories = [
-    "Repas",
-    "Transport",
-    "Divertissement",
-    "Santé",
-    "Vêtements",
-    "Dons"
-  ];
+  int? currentIndex ;
+  int? initalIndex ;
 
-  List<String> incomeCategories = ["Salaire", "Business", "Cadeaux"];
+  List<String> expenseCategories = [];
+
+  List<String> incomeCategories = [];
   List<Expense> expenseList = [];
   List<Income> incomes = [];
   void getIncomes() {
@@ -128,7 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     totalExpense =
         totalExpensesByType.values.fold(0, (sum, value) => sum + value);
-    if (budget != 0 && totalExpense >= 0.7 * budget) {
+    if (SharedPref.getBudget() != null &&
+        totalExpense >= 0.7 * SharedPref.getBudget()!) {
       NotificationService.showLocalNotification(
           "Alerte", "Attention, votre budget est presque atteint", "");
     }
@@ -143,6 +142,15 @@ class _HomeScreenState extends State<HomeScreen> {
     totalExpensePerCategory();
     totalIncomesPerDay();
     totalIncomesPerCategory();
+    isDarkMode = SharedPref.isDarkMode() ?? false;
+    incomeCategories =
+        SharedPref.getIncomeCategories() ?? ["Salaire", "Business", "Cadeaux"];
+    expenseCategories = SharedPref.getExpenseCategories() ??
+        ["Repas", "Transport", "Divertissement", "Santé", "Vêtements", "Dons"];
+
+        currentIndex=widget.currentIndex;
+        initalIndex=widget.initalIndex;
+        
     // TODO: implement initState
     super.initState();
   }
@@ -150,78 +158,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 0,
+      initialIndex: initalIndex!,
       length: 2,
       child: Scaffold(
         backgroundColor: isDarkMode ? Colors.black45 : Colors.white,
-        drawer: Drawer(
-          child: SingleChildScrollView(
-              child: Container(
-            child: Column(children: [
-              Container(
-                height: 400,
-                width: double.infinity,
-                color: const Color.fromARGB(255, 71, 55, 241),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          height: 100,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage('assets/profil.png'),
-                            ),
-                          ),
-                        ),
-                        const Text(
-                          "  Vous devez vous connecté pour pouvoir sauvegarder \n et restaurer les données de l'application.",
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                side: const BorderSide(color: Colors.white),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  "assets/google.png",
-                                  width: 24, // Augmenter la taille de l'image
-                                  height: 24, // Augmenter la taille de l'image
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  "Se connecter avec google",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            onPressed: () {
-                              // Ajoutez votre logique ici
-                            },
-                          ),
-                        )
-                      ]),
-                ),
-              ),
-            ]),
-          )),
-        ),
-        appBar: AppBar(
+        drawer: myDrawer(),
+         appBar: AppBar(
           actions: [
             IconButton(
               icon: Icon(
@@ -229,7 +171,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: isDarkMode ? Colors.white : Colors.black45,
               ),
               onPressed: () {
-                isDarkMode = !isDarkMode;
+                if (SharedPref.isDarkMode() == null) {
+                  // Initialize to dark mode if not set
+                  isDarkMode = true;
+                  SharedPref.storePrefMode(isDarkMode);
+                } else {
+                  // Toggle between dark and light mode
+                  isDarkMode = !isDarkMode;
+                  SharedPref.storePrefMode(isDarkMode);
+                }
                 setState(() {});
               },
             ),
@@ -372,6 +322,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       try {
                                         expenseCategories.add(
                                             expenseCategoryNameController.text);
+                                        SharedPref.storeExpenseCategories(
+                                            expenseCategories);
                                         categoryNameController.clear();
                                         setState(() {});
                                         Navigator.pop(context);
@@ -476,6 +428,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       try {
                                         expenseCategories[index] =
                                             expenseCategoryNameController.text;
+                                        SharedPref.storeExpenseCategories(
+                                            expenseCategories);
                                         categoryNameController.clear();
                                         setState(() {});
                                         Navigator.pop(context);
@@ -502,74 +456,76 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                       child:
-                      //  Container(
-                      //   decoration: BoxDecoration(
-                      //     color: color.withOpacity(0.3),
-                      //     borderRadius: BorderRadius.circular(12),
-                      //   ),
-                      //   padding: EdgeInsets.all(16),
-                      //   child: Column(
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Icon(
-                      //         Icons.category,
-                      //         color: color,
-                      //         size: 28,
-                      //       ),
-                      //       Text(
-                      //         categorie,
-                      //         style: TextStyle(
-                      //           fontSize: 18,
-                      //           fontWeight: FontWeight.bold,
-                      //           color: Colors.white,
-                      //         ),
-                      //       ),
-                      //       Text(
-                      //         "$amount F CFA ",
-                      //         style: TextStyle(
-                      //           fontSize: 14,
-                      //           fontWeight: FontWeight.bold,
-                      //           color: Colors.white70,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      Container(
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(12), // Adjust padding
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.category, color: color, size: 24),
-                  const SizedBox(height: 4),
-                  Text(
-                    categorie,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    overflow: TextOverflow.ellipsis, // Prevent overflow
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "$amount F CFA",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white70,
-                    ),
-                    overflow: TextOverflow.ellipsis, // Prevent overflow
-                  ),
-                ],
-              ),
-            ),
+                          //  Container(
+                          //   decoration: BoxDecoration(
+                          //     color: color.withOpacity(0.3),
+                          //     borderRadius: BorderRadius.circular(12),
+                          //   ),
+                          //   padding: EdgeInsets.all(16),
+                          //   child: Column(
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: [
+                          //       Icon(
+                          //         Icons.category,
+                          //         color: color,
+                          //         size: 28,
+                          //       ),
+                          //       Text(
+                          //         categorie,
+                          //         style: TextStyle(
+                          //           fontSize: 18,
+                          //           fontWeight: FontWeight.bold,
+                          //           color: Colors.white,
+                          //         ),
+                          //       ),
+                          //       Text(
+                          //         "$amount F CFA ",
+                          //         style: TextStyle(
+                          //           fontSize: 14,
+                          //           fontWeight: FontWeight.bold,
+                          //           color: Colors.white70,
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
+                          Container(
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.all(12), // Adjust padding
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.category, color: color, size: 24),
+                            const SizedBox(height: 4),
+                            Text(
+                              categorie,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              overflow:
+                                  TextOverflow.ellipsis, // Prevent overflow
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "$amount F CFA",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white70,
+                              ),
+                              overflow:
+                                  TextOverflow.ellipsis, // Prevent overflow
+                            ),
+                          ],
+                        ),
+                      ),
                     );
                   }
                 },
@@ -642,7 +598,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         .validate()) {
                                       incomeCategories
                                           .add(categoryNameController.text);
-
+                                      SharedPref.storeIncomeCategories(
+                                          incomeCategories);
                                       setState(() {});
                                       categoryNameController.clear();
                                       Navigator.pop(context);
@@ -655,8 +612,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         );
                       },
-                      child:
-                       Container(
+                      child: Container(
                         decoration: BoxDecoration(
                           color: Colors.green.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(12),
@@ -693,119 +649,123 @@ class _HomeScreenState extends State<HomeScreen> {
                     final color = _getDynamicColor(index);
 
                     return GestureDetector(
-                      onLongPress: () {
-                        expenseCategoryNameController.text = category;
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              scrollable: true,
-                              title: const Text("Modifier categorie"),
-                              content: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Form(
-                                  key: categoryformKey,
-                                  child: TextFormField(
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Veuillez entrer le nom de la dépense';
-                                      }
-                                      return null;
-                                    },
-                                    controller: expenseCategoryNameController,
-                                    decoration: const InputDecoration(
-                                      labelText: "nom de la categorie",
-                                      icon: Icon(Icons.category),
+                        onLongPress: () {
+                          expenseCategoryNameController.text = category;
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                scrollable: true,
+                                title: const Text("Modifier categorie"),
+                                content: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Form(
+                                    key: categoryformKey,
+                                    child: TextFormField(
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Veuillez entrer le nom de la dépense';
+                                        }
+                                        return null;
+                                      },
+                                      controller: expenseCategoryNameController,
+                                      decoration: const InputDecoration(
+                                        labelText: "nom de la categorie",
+                                        icon: Icon(Icons.category),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              actions: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red),
-                                  child: const Text(
-                                    "annuler",
-                                    style: TextStyle(color: Colors.white),
+                                actions: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red),
+                                    child: const Text(
+                                      "annuler",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
                                   ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                ElevatedButton(
-                                  child: const Text(
-                                    "Modifer",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue),
-                                  onPressed: () {
-                                    if (categoryformKey.currentState!
-                                        .validate()) {
-                                      try {
-                                        incomeCategories[index] =
-                                            expenseCategoryNameController.text;
-                                        categoryNameController.clear();
-                                        setState(() {});
-                                        Navigator.pop(context);
-                                        print("updated");
-                                      } catch (e) {
-                                        print("erreur$e");
+                                  ElevatedButton(
+                                    child: const Text(
+                                      "Modifer",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue),
+                                    onPressed: () {
+                                      if (categoryformKey.currentState!
+                                          .validate()) {
+                                        try {
+                                          incomeCategories[index] =
+                                              expenseCategoryNameController
+                                                  .text;
+                                          SharedPref.storeIncomeCategories(
+                                              incomeCategories);
+
+                                          categoryNameController.clear();
+                                          setState(() {});
+                                          Navigator.pop(context);
+                                          print("updated");
+                                        } catch (e) {
+                                          print("erreur$e");
+                                        }
                                       }
-                                    }
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => AddIncomeScreen(
-                              isDarkMode: isDarkMode,
-                              selectedCategory: category,
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => AddIncomeScreen(
+                                isDarkMode: isDarkMode,
+                                selectedCategory: category,
+                              ),
                             ),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        );
-                      },
-                      child:
-                      Container(
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(12), // Adjust padding
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.category, color: color, size: 24),
-                  const SizedBox(height: 4),
-                  Text(
-                    category,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    overflow: TextOverflow.ellipsis, // Prevent overflow
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "$amount F CFA",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white70,
-                    ),
-                    overflow: TextOverflow.ellipsis, // Prevent overflow
-                  ),
-                ],
-              ),
-            )
-                    );
+                          padding: const EdgeInsets.all(12), // Adjust padding
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.category, color: color, size: 24),
+                              const SizedBox(height: 4),
+                              Text(
+                                category,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                overflow:
+                                    TextOverflow.ellipsis, // Prevent overflow
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "$amount F CFA",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white70,
+                                ),
+                                overflow:
+                                    TextOverflow.ellipsis, // Prevent overflow
+                              ),
+                            ],
+                          ),
+                        ));
                   }
                 },
               ),
@@ -924,7 +884,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           icon: Icon(
                             Icons.delete,
-                            color: Colors.white,
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
                         ),
                       ],
@@ -1036,7 +996,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           icon: Icon(
                             Icons.delete,
-                            color: Colors.white,
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
                         ),
                       ],
@@ -1435,14 +1395,13 @@ class _HomeScreenState extends State<HomeScreen> {
           // statistiques end here
 
           //budget start here
-          budget == 0
+          SharedPref.getBudget() == null
               ? Center(
                   child: Container(
                     width: 200,
                     height: 200,
                     child: GestureDetector(
                       onTap: () {
-                        budgetController.text = budget.toString();
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -1461,6 +1420,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       return null;
                                     },
                                     controller: budgetController,
+                                    keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
                                       labelText: "montant du budget",
                                       icon: Icon(Icons.category),
@@ -1484,14 +1444,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue),
                                   onPressed: () {
-                                    print(budget);
                                     if (categoryformKey.currentState!
                                         .validate()) {
-                                      budget =
+                                      double budget =
                                           double.parse(budgetController.text);
-                                      print(budget);
-                                      if (budget != 0.0 &&
-                                          totalExpense >= 0.7 * budget) {
+                                      SharedPref.storeBudget(budget);
+                                      if (totalExpense >=
+                                          0.7 * SharedPref.getBudget()!) {
                                         NotificationService.showLocalNotification(
                                             "Alerte",
                                             "Attention, votre budget est presque atteint",
@@ -1553,7 +1512,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       // Monthly Budget Card
                       GestureDetector(
                         onTap: () {
-                          budgetController.text = budget.toString();
+                          budgetController.text =
+                              SharedPref.getBudget().toString();
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -1572,6 +1532,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         return null;
                                       },
                                       controller: budgetController,
+                                      keyboardType: TextInputType.number,
                                       decoration: const InputDecoration(
                                         labelText: "montant du budget",
                                         icon: Icon(Icons.category),
@@ -1597,10 +1558,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onPressed: () {
                                       if (categoryformKey.currentState!
                                           .validate()) {
-                                        setState(() {
-                                          budget = double.parse(
-                                              budgetController.text);
-                                        });
+                                        double budget =
+                                            double.parse(budgetController.text);
+                                        SharedPref.storeBudget(budget);
+                                        if (totalExpense >=
+                                            0.7 * SharedPref.getBudget()!) {
+                                          NotificationService.showLocalNotification(
+                                              "Alerte",
+                                              "Attention, votre budget est presque atteint",
+                                              "rien");
+                                        }
+
+                                        setState(() {});
                                       }
                                       budgetController.clear();
                                       Navigator.pop(context);
@@ -1642,7 +1611,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      ' $totalExpense F CFA  /  $budget F CFA',
+                                      ' $totalExpense F CFA  /  ${SharedPref.getBudget()} F CFA',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: isDarkMode
@@ -1651,10 +1620,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                                     Text(
-                                      ' ${budget - totalExpense} F CFA ',
+                                      ' ${SharedPref.getBudget()! - totalExpense} F CFA ',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: totalExpense / budget > 0.6
+                                        color: totalExpense /
+                                                    SharedPref.getBudget()! >
+                                                0.7
                                             ? Colors.red
                                             : Colors.green,
                                         fontWeight: FontWeight.bold,
@@ -1665,10 +1636,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(height: 8.0),
                                 LinearProgressIndicator(
                                   value: totalExpense /
-                                      budget, // Proportion utilisée
+                                      SharedPref
+                                          .getBudget()!, // Proportion utilisée
                                   backgroundColor: Colors.grey[800],
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                      totalExpense / budget > 0.6
+                                      totalExpense / SharedPref.getBudget()! >
+                                              0.7
                                           ? Colors.red
                                           : Colors.green),
                                 ),
@@ -1701,7 +1674,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
           //budget end here
-        ][currentIndex],
+        ][currentIndex!],
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.grey[100],
@@ -1709,8 +1682,8 @@ class _HomeScreenState extends State<HomeScreen> {
             currentIndex = value;
             setState(() {});
           },
-          currentIndex: currentIndex,
-          items: [
+          currentIndex: currentIndex!,
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(
                 Icons.home,

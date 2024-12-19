@@ -58,7 +58,7 @@ class _UpdateIncomeScreenState extends State<UpdateIncomeScreen> {
 
 
    Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) =>  HomeScreen(currentIndex: 1,initalIndex: 1,)),
             (route) => false, // Remove all previous routes
           );
                 } catch (e) {
