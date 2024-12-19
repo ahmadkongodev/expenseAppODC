@@ -1,9 +1,10 @@
+import 'package:expense_app/notification.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
+ 
 import 'db/expenses_db_helper.dart';
 import 'db/incomes_db_helper.dart';
 import 'screens/home.dart'; 
+import 'dart:async';
 
 late ObjectBoxIncomes incomesObjectbox;
 late ObjectBoxExpenses expensesObjectbox;
@@ -13,7 +14,10 @@ Future<void> main() async {
 
   incomesObjectbox = await ObjectBoxIncomes.create();
   expensesObjectbox = await ObjectBoxExpenses.create(); 
-    
+   NotificationService.initNotification();
+  //   const oneSec = Duration(minutes:1);
+  // Timer.periodic(oneSec, (Timer t) =>  NotificationService.showLocalNotification("test", "ajouter vos depenses du jour", "rienn")
+  //           );
   runApp(const MyApp());
 }
 

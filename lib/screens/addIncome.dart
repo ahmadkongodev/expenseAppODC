@@ -41,7 +41,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: widget.isDarkMode?   Colors.black87 : Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
@@ -96,7 +96,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                 controller: _amountController,
                 focusNode: _amountFocusNode,
                 keyboardType: TextInputType.number,
-                style: TextStyle(color: Colors.white), // Text color
+                style: TextStyle(color: widget.isDarkMode?  Colors.white: Colors.black), // Text color
                 decoration: InputDecoration(
                   labelText: 'Montant d\'argent',
                   labelStyle: TextStyle(color:  widget.isDarkMode? Colors.white : Colors.black,),
@@ -154,14 +154,14 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                  backgroundColor: Colors.blueAccent, // Background color
+                  backgroundColor: widget.isDarkMode?  Colors.grey[100] : Colors.black, // Background color
                 ),
                 child: Text(
                   'Enregistrer',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: widget.isDarkMode? Colors.white : Colors.black, // Text color
+                    color: widget.isDarkMode? Colors.black : Colors.white, // Text color
                   ),
                 ),
               ),

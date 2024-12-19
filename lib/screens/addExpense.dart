@@ -4,6 +4,7 @@ import 'package:expense_app/screens/home.dart';
 import 'package:flutter/material.dart';
 
 import '../db/expenses_db_helper.dart';
+import '../notification.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key, required this.selectedCategory, required this.isDarkMode});
@@ -150,7 +151,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               backgroundColor: Colors.green,
             ),
           );
-
+          
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const HomeScreen()),
             (route) => false, // Remove all previous routes
