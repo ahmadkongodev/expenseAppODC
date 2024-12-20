@@ -162,8 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
       length: 2,
       child: Scaffold(
         backgroundColor: isDarkMode ? Colors.black45 : Colors.white,
-        drawer: myDrawer(),
-         appBar: AppBar(
+        drawer: const myDrawer(),
+         appBar: 
+         AppBar(
           actions: [
             IconButton(
               icon: Icon(
@@ -232,20 +233,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
           title: Column(
             children: [
-              Text(
-                'Manager',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: isDarkMode ? Colors.white : Colors.black87,
-                ),
-              ),
+              
               Text(
                 'Solde: ${totalIncomes - totalExpense} FCFA',
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: isDarkMode ? Colors.white : Colors.black87,
+                  color:  totalIncomes - totalExpense<0? Colors.red : isDarkMode ? Colors.white : Colors.black87,
                 ),
               ),
             ],
@@ -775,6 +769,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
           //operations start here
           TabBarView(children: [
+            expenseList.isEmpty?
+            Center(child: Column(
+              children: [
+                Image.asset("assets/no-data.png",width: 300, height: 300,),
+                 Text("Aucune donnée trouvée, veuillez effectuer des opérations", style: TextStyle(color: isDarkMode? Colors.white: Colors.black),)
+              ],
+            ),) :
             //expenses operations
             ListView.builder(
               itemCount: expenseList.length,
@@ -893,7 +894,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
+            
             //incomes operations
+             incomes.isEmpty?
+            Center(child: Column(
+              children: [
+                Image.asset("assets/no-data.png", width: 300, height: 300,),
+                 Text("Aucune donnée trouvée, veuillez effectuer des opérations", style: TextStyle(color: isDarkMode? Colors.white: Colors.black),)
+              ],
+            ),) :
             ListView.builder(
               itemCount: incomes.length,
               itemBuilder: (context, index) {
@@ -1012,6 +1021,13 @@ class _HomeScreenState extends State<HomeScreen> {
 //statistique start here
           TabBarView(children: [
 // expenes statistique
+  expenseList.isEmpty?
+            Center(child: Column(
+              children: [
+                Image.asset("assets/no-data.png",width: 300, height: 300,),
+                 Text("Aucune donnée trouvée, veuillez effectuer des opérations", style: TextStyle(color: isDarkMode? Colors.white: Colors.black),)
+              ],
+            ),):
             ListView(
               children: [
                 Container(
@@ -1210,6 +1226,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             // incomes statistique
+             incomes.isEmpty?
+            Center(child: Column(
+              children: [
+                Image.asset("assets/no-data.png", width: 300, height: 300,),
+                 Text("Aucune donnée trouvée, veuillez effectuer des opérations", style: TextStyle(color: isDarkMode? Colors.white: Colors.black),)
+              ],
+            ),) :
             ListView(
               children: [
                 Container(
