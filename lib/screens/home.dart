@@ -165,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
         drawer: const myDrawer(),
          appBar: 
          AppBar(
+      iconTheme: IconThemeData(color:  isDarkMode ? Colors.white : Colors.black45,),
           actions: [
             IconButton(
               icon: Icon(
